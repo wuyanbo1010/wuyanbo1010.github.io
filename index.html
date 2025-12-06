@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>GPT & 工具说明</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      /* 主题变量（默认浅色），深色在 body.dark 中统一覆盖 */
+      --bg: radial-gradient(circle at top, #f8f1e7 0, #e9ddce 40%, #d7c8b7 100%);
+      --overlay-bg: rgba(249,247,242,0.92);
+      --card-bg: #fefcf8;
+      --card-border: #e5d8c7;
+
+      --paper-bg: #fdf7ef;
+      --paper-border: #e5d5c2;
+      --footer-border: rgba(229,213,194,0.9);
+
+      --text-main: #111827;
+      --text-soft: #6b7280;
+
+      --accent: #2563eb;
+      --accent-contrast: #f9fafb;
+
+      --nav-btn-bg: rgba(250,248,243,0.9);
+      --nav-btn-border: rgba(229,213,194,0.9);
+      --nav-btn-bg-hover: #fdf2e9;
+      --nav-btn-border-hover: #e0cbb3;
+
+      --section-primary-bg: rgba(255,255,255,0.92);
+      --section-secondary-bg: rgba(255,255,255,0.9);
+      --section-border: #e5e7eb;
+
+      --code-bg: rgba(249,250,251,0.9);
+      --download-bg: rgba(249,250,251,0.9);
+
+      --tag-bg: #fef3c7;
+      --tag-border: #fde68a;
+      --tag-text: #92400e;
+
+      --copy-btn-bg: #ffffff;
+      --copy-btn-border: #d1d5db;
+      --copy-btn-text: #4b5563;
+
+      --line-color: rgba(209,213,219,0.32);
+    }
+
+    body.dark {
+      --bg: radial-gradient(circle at top, #111827 0, #020617 45%, #020617 100%);
+      --overlay-bg: rgba(3,7,18,0.92);
+      --card-bg: #020617;
+      --card-border: #1f2937;
+
+      --paper-bg: #020617;
+      --paper-border: #1f2937;
+      --footer-border: #1f2937;
+
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+
+      --accent: #38bdf8;
+      --accent-contrast: #020617;
+
+      --nav-btn-bg: #020617;
+      --nav-btn-border: #374151;
+      --nav-btn-bg-hover: #1f2937;
+      --nav-btn-border-hover: #4b5563;
+
+      --section-primary-bg: rgba(15,23,42,0.96);
+      --section-secondary-bg: rgba(15,23,42,0.9);
+      --section-border: #374151;
+
+      --code-bg: #020617;
+      --download-bg: #020617;
+
+      --tag-bg: rgba(30,64,175,0.3);
+      --tag-border: #1d4ed8;
+      --tag-text: #bfdbfe;
+
+      --copy-btn-bg: #020617;
+      --copy-btn-border: #374151;
+      --copy-btn-text: #9ca3af;
+
+      --line-color: rgba(55,65,81,0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui,
+        "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      font-size: 15px;
+      line-height: 1.75;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* 密码验证层 */
+    .gate {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: var(--overlay-bg);
+      z-index: 10;
+      transition: background 0.25s ease;
+    }
+
+    .gate-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+      padding: 22px 20px 18px;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+
+    .gate-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    .gate-pin {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid #e0cbb3;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #f3e4d3);
+      box-shadow: 0 2px 4px rgba(148,118,84,0.6);
+    }
+
+    .gate-sub {
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      margin-bottom: 14px;
+    }
+
+    .gate-label {
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      color: var(--text-soft);
+    }
+
+    .gate-input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .gate-input:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .gate-actions {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .gate-btn {
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      padding: 7px 14px;
+      font-size: 0.86rem;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      color: #1f2937;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .gate-hint {
+      font-size: 0.76rem;
+      color: var(--text-soft);
+    }
+
+    .gate-toggle {
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    .gate-error {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #dc2626;
+      min-height: 1em;
+    }
+
+    /* 主题切换按钮（大一点的圆灯泡，没有底座） */
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      padding: 5px 12px;
+      font-size: 0.82rem;
+      background: rgba(249,250,251,0.96);
+      color: var(--text-soft);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .theme-toggle-btn::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 1.6px solid currentColor;
+      background: radial-gradient(circle at 30% 30%,
+        rgba(255,255,255,0.98),
+        rgba(250,204,21,0.3)
+      );
+      box-shadow: 0 0 6px rgba(250,204,21,0.7);
+      display: inline-block;
+    }
+    .theme-toggle-btn:hover {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+      color: #111827;
+    }
+
+    body.dark .theme-toggle-btn {
+      background: #020617;
+      border-color: #4b5563;
+      color: var(--text-soft);
+    }
+    body.dark .theme-toggle-btn:hover {
+      background: #111827;
+      border-color: #9ca3af;
+      color: #e5e7eb;
+    }
+
+    /* 主体页面 */
+    .page {
+      min-height: 100vh;
+      display: none;
+      padding: 20px 14px 28px;
+    }
+    @media (min-width: 768px) {
+      .page { padding: 32px 0 40px; }
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      background-color: var(--paper-bg);
+      border-radius: 22px;
+      border: 1px solid var(--paper-border);
+      box-shadow: 0 10px 30px rgba(15,23,42,0.16);
+      padding: 18px 16px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.25s, border-color 0.25s;
+    }
+    @media (min-width: 768px) {
+      .shell { padding: 24px 24px 26px; }
+    }
+
+
+
+    .shell-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--footer-border);
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+    }
+
+    .title-subline {
+      margin-top: 3px;
+      width: 80px;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #f97316, transparent);
+    }
+
+    .title-meta {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    .subtitle {
+      font-size: 0.88rem;
+      color: var(--text-soft);
+      margin-top: 4px;
+    }
+
+    nav {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.82rem;
+      align-items: center;
+    }
+
+    nav button {
+      border-radius: 999px;
+      padding: 5px 11px;
+      border: 1px solid var(--nav-btn-border);
+      background: var(--nav-btn-bg);
+      color: var(--text-soft);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.14s ease-out;
+    }
+    nav button:hover {
+      border-color: var(--nav-btn-border-hover);
+      background: var(--nav-btn-bg-hover);
+      color: #1f2937;
+    }
+    nav button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-contrast);
+      font-weight: 500;
+    }
+
+    .theme-toggle-page {
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    main {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section {
+      border-radius: 18px;
+      padding: 12px 12px 13px;
+      background: var(--section-secondary-bg);
+      border: 1px dashed var(--section-border);
+    }
+    .section-primary {
+      background: var(--section-primary-bg);
+      border-style: solid;
+    }
+
+    @media (min-width: 768px) {
+      .section { padding: 14px 14px 14px; }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 0.88rem;
+      color: var(--text-main);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-title .bar {
+      width: 18px;
+      height: 1px;
+      background: linear-gradient(to right, var(--accent), transparent);
+      border-radius: 999px;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--tag-border);
+      color: var(--tag-text);
+    }
+
+    .section-body {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--text-soft);
+    }
+    .section-body p { margin: 0 0 6px; }
+    .section-body p:last-child { margin-bottom: 0; }
+
+    /* 账号块 */
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 12px;
+      border: 1px solid var(--section-border);
+      padding: 8px 10px 7px;
+      font-family: "JetBrains Mono", Consolas, ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+      font-size: 0.84rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .code-label {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .code-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .code-line:last-child { margin-bottom: 0; }
+
+    .code-text {
+      white-space: normal;
+      word-break: break-all;
+      overflow-wrap: break-word;
+      flex: 1;
+    }
+
+    .code-multiline {
+      margin-top: 2px;
+      white-space: normal;
+      word-break: break-all;
+      overflow-wrap: break-word;
+    }
+
+    .copy-btn {
+      border-radius: 999px;
+      border: 1px solid var(--copy-btn-border);
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      background: var(--copy-btn-bg);
+      color: var(--copy-btn-text);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.12s ease-out;
+    }
+    .copy-btn:hover {
+      border-color: var(--accent);
+      color: #1f2937;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      margin-top: 4px;
+    }
+
+    /* 下载列表 */
+    .downloads {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .download-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: var(--download-bg);
+      border: 1px solid var(--section-border);
+    }
+
+    .download-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .download-title {
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .download-desc {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    .download-btn {
+      flex-shrink: 0;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      padding: 5px 12px;
+      font-size: 0.82rem;
+      background: var(--accent);
+      color: var(--accent-contrast);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .download-btn:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    footer {
+      margin-top: 14px;
+      padding-top: 8px;
+      border-top: 1px solid var(--footer-border);
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    @media (min-width: 768px) {
+      footer {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 密码验证层 -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-title">
+      <span class="gate-pin"></span>
+      <span>访问验证</span>
+    </div>
+    <div class="gate-sub">
+      这是一个私人页面，仅包含账号信息和使用说明。
+    </div>
+    <div class="gate-label">访问密码</div>
+    <input
+      id="access-input"
+      class="gate-input"
+      type="password"
+      placeholder="在这里输入密码"
+      autocomplete="off"
+    />
+    <div class="gate-actions">
+      <button class="gate-btn" onclick="checkAccess()">进入页面</button>
+      <div class="gate-hint">验证你的身份证后4位数字解锁。</div>
+    </div>
+    <div class="gate-toggle">
+      <button
+        type="button"
+        class="theme-toggle-btn"
+        id="theme-toggle-btn-gate"
+        onclick="toggleTheme()"
+      >
+        太刺眼了点这里暗一点
+      </button>
+    </div>
+    <div class="gate-error" id="gate-error"></div>
+  </div>
+</div>
+
+<!-- 主体页面 -->
+<div class="page" id="page">
+  <div class="shell">
+    <div class="shell-inner">
+      <header>
+        <div class="title-block">
+          <div class="title-row">
+            <div>
+              <div class="title">GPT & 工具说明</div>
+              <div class="title-subline"></div>
+            </div>
+            <div class="title-meta">
+              本静态网页使用GitHub托管，不会记录任何访问信息，工具本身也都是官方版本没有隐私风险，我希望你可以没有压力的自由选择，用不用都好，我只是给你提供一个多的选择而不是要求。
+            </div>
+          </div>
+        </div>
+        <nav>
+          <button class="primary" onclick="scrollToSection('accounts')">账号信息</button>
+          <button onclick="scrollToSection('downloads')">安装包下载</button>
+          <button onclick="scrollToSection('guide')">使用说明</button>
+          <button onclick="scrollToSection('privacy')">隐私说明</button>
+        </nav>
+        <div class="theme-toggle-page">
+          <button
+            type="button"
+            class="theme-toggle-btn"
+            id="theme-toggle-btn-page"
+            onclick="toggleTheme()"
+          >
+            太刺眼了点这里暗一点
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <!-- 账号信息 -->
+        <section class="section section-primary" id="accounts">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="bar"></span>
+              <span>账号信息</span>
+            </div>
+            <span class="tag">ACCOUNTS</span>
+          </div>
+          <div class="section-body">
+            <!-- VPN -->
+            <div class="code-block">
+              <div class="code-label">VPN（梯子 / 机场）</div>
+              <div class="code-line">
+                <span class="code-text">
+                  网址：
+                  <span id="vpn-url">http://www.52fb.cc/#/login</span>
+                </span>
+                <button class="copy-btn" onclick="copyText('vpn-url', this)">复制</button>
+              </div>
+              <div class="hint">
+                （复制到浏览器打开。这个地址如果失效可以找别的机场工具。也可以跟我说：“VPN 地址不能用了”，我把新的登录方式更新在这里，不会轻易打扰你。）
+              </div>
+              <div class="code-line" style="margin-top:6px;">
+                <span class="code-text">
+                  账号：
+                  <span id="vpn-acc">2027147086@qq.com</span>
+                </span>
+                <button class="copy-btn" onclick="copyText('vpn-acc', this)">复制</button>
+              </div>
+              <div class="code-line">
+                <span class="code-text">
+                  密码：
+                  <span id="vpn-pwd">tangxueer</span>
+                </span>
+                <button class="copy-btn" onclick="copyText('vpn-pwd', this)">复制</button>
+              </div>
+              <div class="code-label" style="margin-top:6px;">订阅地址：</div>
+              <div class="code-multiline">
+                <span id="vpn-sub">http://sub.cccui.cn/api/v1/ss/a3a0b97fd0cfe17dc4a48dc0d102c1a7</span>
+              </div>
+              <button class="copy-btn" style="margin-top:4px;" onclick="copyText('vpn-sub', this)">复制订阅地址</button>
+              <div class="hint">
+                （任意机场软件安装后嵌入该地址“订阅”，即可获取翻墙节点，如果不想登录机场的官网，可以跳过上面的步骤直接使用这个获取好的订阅地址。）
+              </div>
+            </div>
+
+            <!-- Google -->
+            <div class="code-block">
+              <div class="code-label">谷歌账号 / 邮箱</div>
+              <div class="code-line">
+                <span class="code-text">
+                  账号：
+                  <span id="google-acc">calmseason.xueer@gmail.com</span>
+                </span>
+                <button class="copy-btn" onclick="copyText('google-acc', this)">复制</button>
+              </div>
+              <div class="code-line">
+                <span class="code-text">
+                  密码：
+                  <span id="google-pwd">quietriver!820</span>
+                </span>
+                <button class="copy-btn" onclick="copyText('google-pwd', this)">复制</button>
+              </div>
+              <div class="code-line">
+                <span class="code-text">绑定手机号：无（保证账号完整独立没有绑定手机号）</span>
+              </div>
+              <div class="code-line">
+                <span class="code-text">
+                  辅助邮箱：
+                  <span id="google-backup">wu.yanbo@live.cn</span>
+                </span>
+                <button class="copy-btn" onclick="copyText('google-backup', this)">复制</button>
+              </div>
+              <div class="hint">
+                （仅能用来重置密码，不能用来登录，拿到账号后可以随时删除解绑。）
+              </div>
+            </div>
+
+            <!-- GPT -->
+            <div class="code-block">
+              <div class="code-label">GPT 账号</div>
+              <div class="code-line">
+                <span class="code-text">
+                  登录地址：
+                  <span id="gpt-url">https://chatgpt.com/</span>
+                </span>
+                <button class="copy-btn" onclick="copyText('gpt-url', this)">复制</button>
+              </div>
+              <div class="hint">
+                选择使用 Google 账号登录，验证上方 Google 账号密码，过程中如果有人机验证按提示操作即可。
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 安装包下载 -->
+        <section class="section section-primary" id="downloads">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="bar"></span>
+              <span>安装包下载</span>
+            </div>
+            <span class="tag">DOWNLOADS</span>
+          </div>
+          <div class="section-body downloads">
+            <div class="download-item">
+              <div class="download-text">
+                <div class="download-title">VPN 手机版</div>
+                <div class="download-desc">
+                  手机使用Google、GPT等墙外软件，都需要安装这个并打开。
+                </div>
+              </div>
+              <a class="download-btn" href="VPN手机版.apk" download>下载</a>
+            </div>
+
+            <div class="download-item">
+              <div class="download-text">
+                <div class="download-title">VPN 电脑版</div>
+                <div class="download-desc">
+                  和手机同理，电脑使用的翻墙软件。
+                </div>
+              </div>
+              <a class="download-btn" href="VPN电脑版.exe" download>下载</a>
+            </div>
+
+            <div class="download-item">
+              <div class="download-text">
+                <div class="download-title">Chrome 浏览器</div>
+                <div class="download-desc">
+                  这是手机版的谷歌浏览器，相比于手机自带的浏览器会更好用，尤其是对于GPT登录验证等墙外服务的时候，如果发现GPT不好登录，各种网址会被禁用，尝试给手机安装这个。如果是电脑，使用系统自带的“Edge”浏览器就好了。
+                </div>
+              </div>
+              <a class="download-btn" href="Chrome浏览器.apk" download>下载</a>
+            </div>
+
+            <div class="download-item">
+              <div class="download-text">
+                <div class="download-title">GPT 手机客户端</div>
+                <div class="download-desc">
+                  本身不需要安装客户端，但是如果需要语音对话和更稳定更方便的使用，可以考虑安装。
+                </div>
+              </div>
+              <a class="download-btn" href="GPT手机客户端.apk" download>下载</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- 使用说明 -->
+        <section class="section" id="guide">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="bar"></span>
+              <span>使用说明</span>
+            </div>
+            <span class="tag">GUIDE</span>
+          </div>
+          <div class="section-body">
+            <p>简单说一下整个流程：</p>
+            <p>1）先用 VPN 连接网络；</p>
+            <p>2）使用任意浏览器打开GPT的官网地址；</p>
+            <p>3）用上面的 Google 账号登录 GPT；</p>
+            <p>4）和GPT开始对话。</p>
+          </div>
+        </section>
+
+        <!-- 额外说明 -->
+        <section class="section" id="extra">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="bar"></span>
+              <span>额外说明</span>
+            </div>
+            <span class="tag">EXTRA</span>
+          </div>
+          <div class="section-body">
+            <p>
+              ChatGPT 是目前综合能力很强、回答相对客观中立的 AI 工具，可以用于工作、学习、自我梳理、情绪管理等很多场景。
+              如果一开始不知道怎么用，直接跟它说“我不知道从哪里开始”，它也会一步步问你问题、帮你理清思路。
+            </p>
+            <p>
+              因为网络环境的原因，国内访问它需要借助一些额外的网络工具，所以我多准备一个 VPN 账号一并给你。
+            </p>
+            <p>
+              这个 VPN 账号是按流量计费的，不限时间，只要还有流量就可以一直用下去，我已经先充了一部分流量进去，够你长期慢慢使用。
+            </p>
+            <p>
+              为了减少你的心理负担，这个账号我在以后都不会再登录和操作，你用也好、不用也好，都完全取决于你自己，我不会知道你是否使用过。
+            </p>
+          </div>
+        </section>
+
+        <!-- 隐私说明 -->
+        <section class="section" id="privacy">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="bar"></span>
+              <span>隐私情况说明</span>
+            </div>
+            <span class="tag">PRIVACY</span>
+          </div>
+          <div class="section-body">
+            <p>关于这次已经准备好的账号可能暴露的隐私情况说明：</p>
+
+            <p><strong>VPN 账号：</strong></p>
+            <p>
+              服务端只会看到总共用了多少流量，不会显示你具体什么时候用、在哪里用、访问了什么内容。
+              拿到账号后你也可以自己修改密码，这样就完全只有你自己可以使用。
+            </p>
+
+            <p><strong>Google 账号：</strong></p>
+            <p>
+              这个邮箱和 Google 账号是单独为你准备的，没有绑定手机号。交给你之后，我会把自己这边保存的账号和密码都删掉。
+              理论上和技术上我都没办法再登录操作。
+            </p>
+            <p>
+              你以后如果愿意，可以在「安全 / 登录记录」里看到有哪些设备登录过，如果发现异常或者长期使用推荐你更改密码、绑定你自己的手机或备用邮箱，
+              毕竟如果丢失我也没办法帮你找回。
+            </p>
+
+            <p><strong>GPT：</strong></p>
+            <p>
+              这个 GPT 账号是用上面的 Google 邮箱新注册的，现在里面没有任何你的信息和对话记录。
+              等我把这一份说明整理好之后，也会把自己这边保存的登录信息全部删掉，这样我以后也没办法再登录、看不到你有没有使用、更不知道你在里面说了些什么。
+            </p>
+          </div>
+        </section>
+
+        <!-- 补充说明 -->
+        <section class="section" id="note">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="bar"></span>
+              <span>补充说明</span>
+            </div>
+            <span class="tag">NOTE</span>
+          </div>
+          <div class="section-body">
+            <p>
+              GPT 和别的 AI 工具类似，都有网页版和软件客户端，无论安装软件或者直接使用网页，差别不是很大，
+              所以嫌麻烦也可以翻墙后直接复制 GPT 的官网地址到任意浏览器直接使用。
+            </p>
+            <p>
+              第一次用可能会有点不熟悉，你也可以直接跟它说你不知道怎么开始，它会一步步引导你。
+              随着你提供的背景信息越全面，它对你的帮助会更具体更专业。
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div>
+          如果你能看到这个网页，那么大概率你掌握了使用GPT的办法，长期使用推荐修改密码、绑定自己的方式。
+        </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ACCESS_PASSWORD = '2163';     // 访问密码
+  const THEME_KEY = 'pageTheme';
+
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    if (isDark) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+    const label = isDark ? '太暗了点这里亮一点' : '太刺眼了点这里暗一点';
+    const gateBtn = document.getElementById('theme-toggle-btn-gate');
+    const pageBtn = document.getElementById('theme-toggle-btn-page');
+    if (gateBtn) gateBtn.textContent = label;
+    if (pageBtn) pageBtn.textContent = label;
+  }
+
+  function toggleTheme() {
+    const isDark = document.body.classList.contains('dark');
+    const next = isDark ? 'light' : 'dark';
+    applyTheme(next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch (e) {}
+  }
+
+  function checkAccess() {
+    const input = document.getElementById('access-input');
+    const errorEl = document.getElementById('gate-error');
+    const val = (input.value || '').trim();
+    if (!val) {
+      errorEl.textContent = '密码不能为空。';
+      return;
+    }
+    if (val === ACCESS_PASSWORD) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('page').style.display = 'block';
+      errorEl.textContent = '';
+      input.value = '';
+    } else {
+      errorEl.textContent = '密码不正确。';
+    }
+  }
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const offset = 70;
+    const rect = el.getBoundingClientRect();
+    let targetTop = rect.top + window.pageYOffset - offset;
+    if (targetTop < 0) targetTop = 0;
+    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+  }
+
+  function copyText(spanId, btn) {
+    const el = document.getElementById(spanId);
+    if (!el) return;
+    const text = el.textContent.trim();
+
+    if (!navigator.clipboard) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(textarea);
+    } else {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
+
+    if (btn) {
+      const old = btn.textContent;
+      btn.textContent = '已复制';
+      setTimeout(() => { btn.textContent = old; }, 1500);
+    }
+  }
+
+  (function init() {
+    // 主题初始化
+    let saved = '';
+    try { saved = localStorage.getItem(THEME_KEY) || ''; } catch (e) {}
+    applyTheme(saved === 'dark' ? 'dark' : 'light');
+
+    // 回车触发密码确认
+    const accessInput = document.getElementById('access-input');
+    if (accessInput) {
+      accessInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') checkAccess();
+      });
+    }
+  })();
+</script>
+</body>
+</html>
